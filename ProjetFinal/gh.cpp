@@ -55,12 +55,12 @@ typedef struct
 } S_ETAT_JEU;
 
 S_ETAT_JEU etatJeu = 
-     { HAUT, 2, NORMAL,
+     { NORMAL, 0, NORMAL,
        { NORMAL, NORMAL, NORMAL, NORMAL, NORMAL },
        { { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, 
-         { AUCUN, 0 }, { AUCUN, 0 } },
+         { NORMAL, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
@@ -377,6 +377,8 @@ void *fctThreadFenetreGraphique(void *)
             }
         }
 
+        afficherGuepe(0);
+
         /*for(int i = 0; i < 5; i++)
         {
             afficherAmi(i, NORMAL);
@@ -403,54 +405,99 @@ void *fctThreadEvenements(void *)
     {
         evenement = lireEvenement();
 
-        switch(evenement)
+        if(evenement == SDL_QUIT)
         {
-            case SDL_QUIT:
-                printf("\nClic sur quitter\n");
-                void *val;
-                fctThreadStanley(val);
-
-
-            case SDLK_UP:
-                printf("KEY_UP\n");
-                break;
-
-            case SDLK_DOWN:
-                printf("KEY_DOWN\n");
-                break;
-
-            case SDLK_LEFT:
-                printf("KEY_LEFT\n");
-                pthread_mutex_unlock(&mutexEtatJeu);
-
-                while(1)
-                {
-                    void *val;
-                    fctThreadStanley(val);
-                
-                }
-                pthread_mutex_lock(&mutexEtatJeu);
-
-                break;
-
-            case SDLK_RIGHT:
-                printf("KEY_RIGHT\n");
-                pthread_mutex_unlock(&mutexEtatJeu);
-
-                while(1)
-                {
-                    void *val;
-                    fctThreadStanley(val);
-                
-                }
-                pthread_mutex_lock(&mutexEtatJeu);
-                
-                
-                break;
-
-            case SDLK_SPACE:
-                printf("SDLK_SPACE\n");
+            printf("\nAu revoir. Merci d'avoir joué\n");
+            exit(0);
         }
+
+        if(evenement == SDLK_RIGHT && (etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS))
+        {
+            pthread_mutex_lock(&mutexEtatJeu);
+            etatJeu.positionStanley ++;
+            pthread_mutex_unlock(&mutexEtatJeu);
+            pthread_cond_signal(&condEvenement);
+        }
+
+        if(evenement == SDLK_LEFT && (etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS))
+        {
+            pthread_mutex_lock(&mutexEtatJeu);
+            etatJeu.positionStanley --;
+            pthread_mutex_unlock(&mutexEtatJeu);
+            pthread_cond_signal(&condEvenement);
+        }
+
+        if(evenement == SDLK_DOWN)
+        {
+            if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 0;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+
+            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 1;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+
+
+            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = BAS;
+                etatJeu.positionStanley = 1;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+        }
+
+        if(evenement == SDLK_UP)
+        {
+            if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 1;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+
+            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 0;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+
+
+            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+            {
+                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.etatStanley = HAUT;
+                etatJeu.positionStanley = 2;
+                pthread_mutex_unlock(&mutexEtatJeu);
+                pthread_cond_signal(&condEvenement);
+            }
+        }
+
+        if(evenement == SDLK_SPACE)
+        {
+            pthread_mutex_lock(&mutexEtatJeu);
+            etatJeu.actionStanley = SPRAY;
+            pthread_mutex_unlock(&mutexEtatJeu);
+            pthread_cond_signal(&condEvenement);
+        }
+
+        evenement = AUCUN;
     }
 }
 
@@ -459,6 +506,8 @@ void *fctThreadStanley(void *)
     while(true)
     {
         pthread_mutex_lock(&mutexEvenement);
+
+        pthread_cond_wait(&condEvenement, &mutexEvenement);
 
         pthread_mutex_lock(&mutexEtatJeu);
 
@@ -481,34 +530,62 @@ void *fctThreadStanley(void *)
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
 
+                                                if(etatJeu.positionStanley == 2)
+                                                {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
+                                                if(etatJeu.positionStanley == 3)
+                                                {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
                                                 break;
 
-                            case SDLK_LEFT:
-                                                if(etatJeu.positionStanley > 0)
+                            case SDLK_LEFT:     pthread_mutex_unlock(&mutexEtatJeu);
+                                                if(etatJeu.positionStanley >= 0)
                                                 {
                                                     etatJeu.positionStanley--;
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
-                            case SDLK_RIGHT:
-                                                if(etatJeu.positionStanley < 3)
+                            case SDLK_RIGHT:    pthread_mutex_unlock(&mutexEtatJeu);
+                                                if(etatJeu.positionStanley <= 3)
                                                 {
-                                                    pthread_mutex_unlock(&mutexEtatJeu);
+                                                    
                                                     etatJeu.positionStanley++;
-                                                    pthread_mutex_lock(&mutexEtatJeu);
+                                                    
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
                             case SDLK_UP:       if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
                                                 {
-                                                    etatJeu.etatStanley = HAUT;
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 1;
                                                 }
                                                 break;
 
                             case SDLK_DOWN:     
-                                                break;
-
-                            case SDL_QUIT:      exit(0);
                                                 break;
                         }
                         break;
@@ -516,9 +593,48 @@ void *fctThreadStanley(void *)
             case ECHELLE:
                         switch(evenement)
                         {
-                            case SDL_QUIT:      exit(0);
-                        }
-                        break;
+
+                            case SDLK_DOWN:     
+                                                if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
+                                                {
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 0;
+                                                }
+
+                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+                                                {
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 1;
+                                                }
+
+                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+                                                {
+                                                    etatJeu.etatStanley = BAS;
+                                                    etatJeu.positionStanley = 1;
+                                                }
+                                                
+                                                break;
+
+                            case SDLK_UP:       if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
+                                                {
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 1;
+                                                }
+
+                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+                                                {
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 0;
+                                                }
+
+                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+                                                {
+                                                    etatJeu.etatStanley = HAUT;
+                                                    etatJeu.positionStanley = 2;
+                                                }
+                                                break;
+                        }  
+
 
             case HAUT:
                         switch(evenement)
@@ -526,6 +642,63 @@ void *fctThreadStanley(void *)
                             case SDLK_SPACE:
                                                 if(etatJeu.positionStanley == 0)
                                                 {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
+                                                if(etatJeu.positionStanley == 1)
+                                                {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
+                                                if(etatJeu.positionStanley == 3)
+                                                {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
+                                                if(etatJeu.positionStanley == 4)
+                                                {
+                                                    printf("Spray\n");
+                                                    etatJeu.actionStanley = SPRAY;
+
+                                                    pthread_mutex_unlock(&mutexEtatJeu);
+
+                                                    sleep(0.2);
+
+                                                    pthread_mutex_lock(&mutexEtatJeu);
+
+                                                    etatJeu.actionStanley = NORMAL;
+                                                }
+
+                                                if(etatJeu.positionStanley == 5)
+                                                {
+                                                    printf("Spray\n");
                                                     etatJeu.actionStanley = SPRAY;
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
@@ -540,28 +713,30 @@ void *fctThreadStanley(void *)
                                                 break;
 
                             case SDLK_LEFT:
-                                                if(etatJeu.positionStanley > 0)
+                                                pthread_mutex_unlock(&mutexEtatJeu);
+                                                if(etatJeu.positionStanley >= 0)
                                                 {
                                                     etatJeu.positionStanley--;
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
                             case SDLK_RIGHT:
+                                                pthread_mutex_unlock(&mutexEtatJeu);
                                                 if(etatJeu.positionStanley <= 5)
                                                 {
-                                                    //pthread_mutex_unlock(&mutexEvenement);
                                                     etatJeu.positionStanley++;
-                                                    //pthread_mutex_lock(&mutexEvenement);
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
-                            case SDLK_UP:       if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
+                            case SDLK_UP:       break;
+
+                            case SDLK_DOWN:     if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
                                                 {
-                                                    etatJeu.etatStanley = HAUT;
+                                                    etatJeu.etatStanley = ECHELLE;
+                                                    etatJeu.positionStanley = 0;
                                                 }
-                                                break;
-
-                            case SDLK_DOWN:
                                                 break;
 
                             case SDL_QUIT:      exit(0);
