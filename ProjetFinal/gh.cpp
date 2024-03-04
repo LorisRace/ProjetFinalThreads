@@ -407,7 +407,8 @@ void *fctThreadEvenements(void *)
         {
             case SDL_QUIT:
                 printf("\nClic sur quitter\n");
-                exit(0);
+                void *val;
+                fctThreadStanley(val);
 
 
             case SDLK_UP:
@@ -504,7 +505,10 @@ void *fctThreadStanley(void *)
                                                 }
                                                 break;
 
-                            case SDLK_DOWN:
+                            case SDLK_DOWN:     
+                                                break;
+
+                            case SDL_QUIT:      exit(0);
                                                 break;
                         }
                         break;
@@ -512,7 +516,7 @@ void *fctThreadStanley(void *)
             case ECHELLE:
                         switch(evenement)
                         {
-
+                            case SDL_QUIT:      exit(0);
                         }
                         break;
 
@@ -558,6 +562,9 @@ void *fctThreadStanley(void *)
                                                 break;
 
                             case SDLK_DOWN:
+                                                break;
+
+                            case SDL_QUIT:      exit(0);
                                                 break;
 
                         }
