@@ -55,12 +55,12 @@ typedef struct
 } S_ETAT_JEU;
 
 S_ETAT_JEU etatJeu = 
-     { NORMAL, 0, NORMAL,
-       { NORMAL, NORMAL, NORMAL, NORMAL, NORMAL },
+     { BAS, 0, NORMAL,
+       { NORMAL, NORMAL, NORMAL, NORMAL, TOUCHE },
        { { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, 
-         { NORMAL, 0 }, { AUCUN, 0 } },
+         { NORMAL, 0 }, { NORMAL, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
@@ -231,12 +231,12 @@ void *fctThreadFenetreGraphique(void *)
         {
             if(etatJeu.positionStanley == 0)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 0, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 0, SPRAY);
                 }
@@ -244,12 +244,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 1)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 1, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 1, SPRAY);
                 }
@@ -257,12 +257,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 2)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 2, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 2, SPRAY);
                 }
@@ -270,12 +270,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 3)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 3, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 3, SPRAY);
                 }
@@ -283,12 +283,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 4)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 4, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 4, SPRAY);
                 }
@@ -296,12 +296,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 5)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(HAUT, 5, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(HAUT, 5, SPRAY);
                 }
@@ -326,12 +326,12 @@ void *fctThreadFenetreGraphique(void *)
         {
             if(etatJeu.positionStanley == 0)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(BAS, 0, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(BAS, 0, SPRAY);
                 }
@@ -339,12 +339,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 1)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(BAS, 1, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(BAS, 1, SPRAY);
                 }
@@ -352,12 +352,12 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 2)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(BAS, 2, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(BAS, 2, SPRAY);
                 }
@@ -365,19 +365,19 @@ void *fctThreadFenetreGraphique(void *)
 
             if(etatJeu.positionStanley == 3)
             {
-                if(etatJeu.etatStanley == NORMAL)
+                if(etatJeu.actionStanley == NORMAL)
                 {
                     afficherStanley(BAS, 3, NORMAL);
                 }
 
-                if(etatJeu.etatStanley == SPRAY)
+                if(etatJeu.actionStanley == SPRAY)
                 {
                     afficherStanley(BAS, 3, SPRAY);
                 }
             }
         }
-
-        afficherGuepe(0);
+        
+        
 
         /*for(int i = 0; i < 5; i++)
         {
@@ -400,7 +400,6 @@ void *fctThreadFenetreGraphique(void *)
 
 void *fctThreadEvenements(void *)
 {
-    
     while(1)
     {
         evenement = lireEvenement();
@@ -411,95 +410,71 @@ void *fctThreadEvenements(void *)
             exit(0);
         }
 
+        pthread_mutex_lock(&mutexEtatJeu);
+
         if(evenement == SDLK_RIGHT && (etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS))
         {
-            pthread_mutex_lock(&mutexEtatJeu);
-            etatJeu.positionStanley ++;
-            pthread_mutex_unlock(&mutexEtatJeu);
-            pthread_cond_signal(&condEvenement);
+            etatJeu.positionStanley++;
         }
 
         if(evenement == SDLK_LEFT && (etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS))
         {
-            pthread_mutex_lock(&mutexEtatJeu);
-            etatJeu.positionStanley --;
-            pthread_mutex_unlock(&mutexEtatJeu);
-            pthread_cond_signal(&condEvenement);
+            etatJeu.positionStanley--;
         }
 
         if(evenement == SDLK_DOWN)
         {
             if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
             {
-                pthread_mutex_lock(&mutexEtatJeu);
-                etatJeu.etatStanley = ECHELLE;
                 etatJeu.positionStanley = 0;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
-            }
-
-            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
-            {
-                pthread_mutex_lock(&mutexEtatJeu);
                 etatJeu.etatStanley = ECHELLE;
-                etatJeu.positionStanley = 1;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
             }
 
-
-            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
             {
-                pthread_mutex_lock(&mutexEtatJeu);
-                etatJeu.etatStanley = BAS;
                 etatJeu.positionStanley = 1;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
+            }
+
+            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+            {
+                etatJeu.etatStanley = BAS;
             }
         }
-
+         
         if(evenement == SDLK_UP)
         {
             if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
             {
-                pthread_mutex_lock(&mutexEtatJeu);
-                etatJeu.etatStanley = ECHELLE;
                 etatJeu.positionStanley = 1;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
-            }
-
-            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
-            {
-                pthread_mutex_lock(&mutexEtatJeu);
                 etatJeu.etatStanley = ECHELLE;
-                etatJeu.positionStanley = 0;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
             }
 
-
-            if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
             {
-                pthread_mutex_lock(&mutexEtatJeu);
+                etatJeu.positionStanley = 0;
+            }
+
+            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+            {
                 etatJeu.etatStanley = HAUT;
                 etatJeu.positionStanley = 2;
-                pthread_mutex_unlock(&mutexEtatJeu);
-                pthread_cond_signal(&condEvenement);
             }
         }
 
         if(evenement == SDLK_SPACE)
         {
-            pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.actionStanley = SPRAY;
-            pthread_mutex_unlock(&mutexEtatJeu);
-            pthread_cond_signal(&condEvenement);
+
+            sleep(0.2);
+
+            etatJeu.actionStanley = NORMAL;
         }
 
-        evenement = AUCUN;
+        pthread_mutex_unlock(&mutexEtatJeu);
+        pthread_cond_signal(&condEvenement);
     }
 }
+
 
 void *fctThreadStanley(void *)
 {
@@ -578,11 +553,13 @@ void *fctThreadStanley(void *)
                                                 pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
-                            case SDLK_UP:       if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
+                            case SDLK_UP:       pthread_mutex_unlock(&mutexEtatJeu);
+                                                if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 1;
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
                                                 break;
 
                             case SDLK_DOWN:     
@@ -615,11 +592,13 @@ void *fctThreadStanley(void *)
                                                 
                                                 break;
 
-                            case SDLK_UP:       if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
+                            case SDLK_UP:       pthread_mutex_unlock(&mutexEtatJeu);
+                                                if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 1;
                                                 }
+                                                pthread_mutex_lock(&mutexEtatJeu);
 
                                                 if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
                                                 {
