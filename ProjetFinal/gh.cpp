@@ -20,6 +20,8 @@ void handlerSIGQUIT(int);
 
 void destructeurVS(void *p);
 
+ int PositionGuepe = 0;
+
 pthread_t handleFenetreGraphique, handleEvenement, handleStanley, handleEnnemis, handleGuepes, handleChenillesDroites, handleChenillesGauches, handleAraigneeDroite, handleAraigneeGauche;
 
 pthread_cond_t condEvenement;
@@ -399,6 +401,21 @@ void *fctThreadFenetreGraphique(void *)
                 {
                     afficherStanley(BAS, 3, SPRAY);
                 }
+            }
+        }
+
+
+
+        if(etatJeu.guepes == NORMAL)
+        {
+            if(PositionGuepe == 0)
+            {
+                afficherGuepe(0);
+            }
+
+            if(PositionGuepe == 1)
+            {
+                afficherGuepe(1);
             }
         }
         
@@ -798,6 +815,8 @@ void *fctThreadEnnemis(void *)
         {
             pthread_create(&handleGuepes, NULL, fctThreadGuepe, NULL);
             printf("\nJe suis une méchante Guèpe\n");
+            int *RetThreadGuepe;
+            pthread_join(handleGuepes, (void **)&RetThreadGuepe);
 
         }
 
@@ -829,7 +848,7 @@ void *fctThreadEnnemis(void *)
     }
 
     free(DelaiApparitionEnnemi);
-    return NULL;
+    pthread_exit(0);
     
 }
 
@@ -839,6 +858,15 @@ void *fctThreadGuepe(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    while(1)
+    {
+        PositionGuepe = 0;
+    }
+
+    pthread_exit(0);
+
+
 }
 
 void *fctThreadChenilleG(void *)
@@ -847,6 +875,8 @@ void *fctThreadChenilleG(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_exit(0);
 }
 
 void *fctThreadChenilleD(void *)
@@ -855,6 +885,8 @@ void *fctThreadChenilleD(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_exit(0);
 }
 
 void *fctThreadAraigneeG(void *)
@@ -863,6 +895,8 @@ void *fctThreadAraigneeG(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_exit(0);
 }
 
 void *fctThreadAraigneeD(void *)
@@ -871,6 +905,8 @@ void *fctThreadAraigneeD(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_exit(0);
 }
 
 /*void *fctThreadInsecticideG(void *)
@@ -931,5 +967,6 @@ void handlerSIGUSR2(int sig)
 void handlerSIGQUIT(int sig)
 {
     printf("Clic sur quitter");
-    (void)sig;
+
+    exit(0);
 }
