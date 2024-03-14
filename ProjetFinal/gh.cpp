@@ -135,16 +135,16 @@ int main(int argc, char* argv[])
     pthread_join(handleFenetreGraphique, (void **)&retThreadFenetreGraphique);
     */
     pthread_create(&handleEvenement, NULL, fctThreadEvenements, NULL);
-    int *retThreadEvenement;
-    pthread_join(handleEvenement, (void **)&retThreadEvenement);
+//    int *retThreadEvenement;
+    //pthread_join(handleEvenement, (void **)&retThreadEvenement);
 
     pthread_create(&handleStanley, NULL, fctThreadStanley, NULL);
-    int *retThreadStanley;
-    pthread_join(handleStanley, (void **)&retThreadStanley);
+  //  int *retThreadStanley;
+    //pthread_join(handleStanley, (void **)&retThreadStanley);
 
     pthread_create(&handleEnnemis, NULL, fctThreadEnnemis, NULL);
-    int *retThreadEnnemis;
-    pthread_join(handleEnnemis, (void **)&retThreadEnnemis);
+    //int *retThreadEnnemis;
+    //pthread_join(handleEnnemis, (void **)&retThreadEnnemis);
     
 
     
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
 
     actualiserFenetreGraphique();*/
-    
+pthread_join(handleEvenement, NULL);    
 }
 
 void *fctThreadFenetreGraphique(void *)
@@ -211,243 +211,54 @@ void *fctThreadFenetreGraphique(void *)
     {
         restaurerImageInterne();
 
-        if(etatJeu.etatAmis[0] == NORMAL)
+        for (int i=0 ; i<5 ; i++)
         {
-            afficherAmi(0, NORMAL);
-        }
-
-        if(etatJeu.etatAmis[0] == TOUCHE)
-        {
-            afficherAmi(0, TOUCHE);
-        }
-
-        if(etatJeu.etatAmis[1] == NORMAL)
-        {
-            afficherAmi(1, NORMAL);
-        }
-
-        if(etatJeu.etatAmis[1] == TOUCHE)
-        {
-            afficherAmi(1, TOUCHE);
-        }
-
-        if(etatJeu.etatAmis[2] == NORMAL)
-        {
-            afficherAmi(2, NORMAL);
-        }
-
-        if(etatJeu.etatAmis[2] == TOUCHE)
-        {
-            afficherAmi(2, TOUCHE);
-        }
-
-        if(etatJeu.etatAmis[3] == NORMAL)
-        {
-            afficherAmi(3, NORMAL);
-        }
-
-        if(etatJeu.etatAmis[3] == TOUCHE)
-        {
-            afficherAmi(3, TOUCHE);
-        }
-
-        if(etatJeu.etatAmis[4] == NORMAL)
-        {
-            afficherAmi(4, NORMAL);
-        }
-
-        if(etatJeu.etatAmis[4] == TOUCHE)
-        {
-            afficherAmi(4, TOUCHE);
-        }
-
-        if(etatJeu.etatStanley == HAUT)
-        {
-            if(etatJeu.positionStanley == 0)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 0, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 0, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 1)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 1, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 1, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 2)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 2, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 2, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 3)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 3, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 3, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 4)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 4, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 4, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 5)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(HAUT, 5, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(HAUT, 5, SPRAY);
-                }
-            }
-
-        }
-
-        if(etatJeu.etatStanley == ECHELLE)
-        {
-            if(etatJeu.positionStanley == 0)
-            {
-                afficherStanley(ECHELLE, 0);
-            }
-
-            if(etatJeu.positionStanley == 1)
-            {
-                afficherStanley(ECHELLE, 1);
-            }
-        }
-
-        if(etatJeu.etatStanley == BAS)
-        {
-            if(etatJeu.positionStanley == 0)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(BAS, 0, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(BAS, 0, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 1)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(BAS, 1, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(BAS, 1, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 2)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(BAS, 2, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(BAS, 2, SPRAY);
-                }
-            }
-
-            if(etatJeu.positionStanley == 3)
-            {
-                if(etatJeu.actionStanley == NORMAL)
-                {
-                    afficherStanley(BAS, 3, NORMAL);
-                }
-
-                if(etatJeu.actionStanley == SPRAY)
-                {
-                    afficherStanley(BAS, 3, SPRAY);
-                }
-            }
-        }
-
-
-
-        if(etatJeu.guepes == NORMAL)
-        {
-            if(PositionGuepe == 0)
-            {
-                afficherGuepe(0);
-            }
-
-            if(PositionGuepe == 1)
-            {
-                afficherGuepe(1);
-            }
-        }
-
-        if(etatJeu.nbEchecs == 1)
-        {
-            afficherEchecs(1);
-        }
-
-        if (etatJeu.nbEchecs == 2)
-        {
-            afficherEchecs(2);
-        }
-
-        if (etatJeu.nbEchecs == 3)
-        {
-            afficherEchecs(3);
+            afficherAmi(i,etatJeu.etatAmis[i]);
         }
         
-        
 
-        /*for(int i = 0; i < 5; i++)
+        afficherStanley(etatJeu.etatStanley, etatJeu.positionStanley, etatJeu.actionStanley);
+
+
+        for (int i=0 ; i<2 ; i++)
         {
-            afficherAmi(i, NORMAL);
-            afficherAmi(i, TOUCHE);
-        }*/
+            if(etatJeu.guepes[i].presence == NORMAL) 
+            {
+                afficherGuepe(i);
+            }
+        }
+
+        for(int i = 0; i < 7; i++)
+        {
+            if(etatJeu.chenillesD[i].presence == NORMAL)
+            {
+                afficherChenilleD(i);
+            }
+        }
+
+        for(int i = 0; i < 5; i++)
+        {
+            if(etatJeu.chenillesG[i].presence == NORMAL)
+            {
+                afficherChenilleG(i);
+            }
+        }
+
+        for(int i = 0; i < 5; i++)
+        {
+            if(etatJeu.araigneesD[i].presence == NORMAL)
+            {
+                afficherAraigneeD(i);
+            }
+        }
+
+        for(int i = 0; i < 5; i++)
+        {
+            if(etatJeu.araigneesG[i].presence == NORMAL)
+            {
+                afficherAraigneeG(i);
+            }
+        }
 
         afficherEchecs(etatJeu.nbEchecs);
 
@@ -485,34 +296,36 @@ while(1)
     switch(evenement)
     {
         case SDLK_RIGHT:
-            if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 5) || (etatJeu.etatStanley == BAS && etatJeu.positionStanley != 3))
+            /*if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 5) || (etatJeu.etatStanley == BAS && etatJeu.positionStanley != 3))
             {
                 
                 etatJeu.positionStanley++;
                 printf("\nDéplacement vers la droite\n");
                 
                
-            }
+            }*/
             break;
 
         case SDLK_LEFT:
-            if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 0) || (etatJeu.etatStanley == BAS)&& etatJeu.positionStanley != 0)
+            /*if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 0) || (etatJeu.etatStanley == BAS)&& etatJeu.positionStanley != 0)
             {
                 etatJeu.positionStanley--;
                 printf("\nDéplacement vers la gauche\n");
-            }
+            }*/
             break;
 
         case SDLK_DOWN:
-            if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
+            /*if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
             {
-                etatJeu.positionStanley = 0;
                 etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 0;
                 printf("\nDéplacement de en haut vers en haut de l'échelle\n");
             }
+            
 
             else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
             {
+                
                 etatJeu.positionStanley = 1;
                 printf("\nDéplacement d'en haut de l'échelle vers en bas de l'échelle\n");
             }
@@ -521,14 +334,15 @@ while(1)
             {
                 etatJeu.etatStanley = BAS;
                 printf("\nDéplacement d'en bas de l'echelle à en bas\n");
-            }
+            }*/
             break;
 
         case SDLK_UP:
-            if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
+            /*if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
             {
-                etatJeu.positionStanley = 1;
+                
                 etatJeu.etatStanley = ECHELLE;
+                etatJeu.positionStanley = 1;
                 printf("\nDéplacement d'en bas à en bas de l'échelle\n");
             }
 
@@ -543,7 +357,7 @@ while(1)
                 etatJeu.etatStanley = HAUT;
                 etatJeu.positionStanley = 2;
                 printf("\nDéplacement d'en haut de l'échelle à en haut\n");
-            }
+            }*/
             break;
 
         case SDLK_SPACE:
@@ -609,6 +423,11 @@ void *fctThreadStanley(void *)
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
                                                     etatJeu.actionStanley = NORMAL;
+
+                                                    if(etatJeu.guepes[0].presence == NORMAL)
+                                                    {
+                                                        etatJeu.guepes[0].presence = AUCUN;
+                                                    }
                                                 }
 
                                                 if(etatJeu.positionStanley == 2)
@@ -684,13 +503,13 @@ void *fctThreadStanley(void *)
                                                     etatJeu.positionStanley = 0;
                                                 }
 
-                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+                                                else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 1;
                                                 }
 
-                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
+                                                else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = BAS;
                                                     etatJeu.positionStanley = 1;
@@ -698,13 +517,13 @@ void *fctThreadStanley(void *)
                                                 
                                                 break;
 
-                            case SDLK_UP:       pthread_mutex_unlock(&mutexEtatJeu);
+                            case SDLK_UP:       
                                                 if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 1;
                                                 }
-                                                pthread_mutex_lock(&mutexEtatJeu);
+                                                
 
                                                 if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
                                                 {
@@ -712,7 +531,7 @@ void *fctThreadStanley(void *)
                                                     etatJeu.positionStanley = 0;
                                                 }
 
-                                                if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
+                                                else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
                                                 {
                                                     etatJeu.etatStanley = HAUT;
                                                     etatJeu.positionStanley = 2;
@@ -850,10 +669,10 @@ void *fctThreadEnnemis(void *)
 
     pthread_setspecific(keySpec, (void *)DelaiApparitionEnnemi);
 
-
+printf("th ennemi demarre\n");
     while(1)
     {
-        kill(pid, SIGALRM);
+        //alarm(0);
 
         int ApparitionEnnemi = 1 + rand()%5;
 
@@ -861,8 +680,8 @@ void *fctThreadEnnemis(void *)
         {
             pthread_create(&handleGuepes, NULL, fctThreadGuepe, NULL);
             printf("\nJe suis une méchante Guèpe\n");
-            int *RetThreadGuepe;
-            pthread_join(handleGuepes, (void **)&RetThreadGuepe);
+            //int *RetThreadGuepe;
+            //pthread_join(handleGuepes, (void **)&RetThreadGuepe);
 
         }
 
@@ -905,9 +724,16 @@ void *fctThreadGuepe(void *)
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
+    printf("Th guepe demarre\n");
+
+    pthread_mutex_lock(&mutexEtatJeu);
+    etatJeu.guepes[0].presence = NORMAL;
+    etatJeu.guepes[0].tid = pthread_self();
+    pthread_mutex_unlock(&mutexEtatJeu);
+
     while(1)
     {
-        PositionGuepe = 0;
+
     }
 
     pthread_exit(0);
@@ -922,6 +748,11 @@ void *fctThreadChenilleG(void *)
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
+    pthread_mutex_lock(&mutexEtatJeu);
+    etatJeu.chenillesG[0].presence = NORMAL;
+    etatJeu.chenillesG[0].tid = pthread_self();
+    pthread_mutex_unlock(&mutexEtatJeu);
+
     pthread_exit(0);
 }
 
@@ -931,6 +762,11 @@ void *fctThreadChenilleD(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_mutex_lock(&mutexEtatJeu);
+    etatJeu.chenillesD[0].presence = NORMAL;
+    etatJeu.chenillesD[0].tid = pthread_self();
+    pthread_mutex_unlock(&mutexEtatJeu);
 
     pthread_exit(0);
 }
@@ -942,6 +778,11 @@ void *fctThreadAraigneeG(void *)
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
+    pthread_mutex_lock(&mutexEtatJeu);
+    etatJeu.araigneesG[0].presence = NORMAL;
+    etatJeu.araigneesG[0].tid = pthread_self();
+    pthread_mutex_unlock(&mutexEtatJeu);
+
     pthread_exit(0);
 }
 
@@ -951,6 +792,11 @@ void *fctThreadAraigneeD(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    pthread_mutex_lock(&mutexEtatJeu);
+    etatJeu.araigneesD[0].presence = NORMAL;
+    etatJeu.araigneesD[0].tid = pthread_self();
+    pthread_mutex_unlock(&mutexEtatJeu);
 
     pthread_exit(0);
 }
