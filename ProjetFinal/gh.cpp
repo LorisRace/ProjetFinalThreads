@@ -16,9 +16,12 @@ void handlerSIGINT(int);
 void handlerSIGALRM(int);
 void handlerSIGUSR1(int);
 void handlerSIGUSR2(int);
-void handlerSIGQUIT(int); 
+void handlerSIGQUIT(int);
+void handlerSIGTSTP(int);
 
 void destructeurVS(void *p);
+
+pid_t pid;
 
  int PositionGuepe = 0;
 
@@ -109,6 +112,12 @@ int main(int argc, char* argv[])
     sigemptyset(&Sigquit.sa_mask);
     sigaction(SIGQUIT, &Sigquit, NULL);
 
+    struct sigaction Sigstp;
+    Sigstp.sa_handler = handlerSIGTSTP;
+    Sigstp.sa_flags = 0;
+    sigemptyset(&Sigstp.sa_mask);
+    sigaction(SIGTSTP, &Sigstp, NULL);
+
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
@@ -119,26 +128,24 @@ int main(int argc, char* argv[])
 
     srand(time(NULL));
 
-    while(1)
-    {
-        alarm(10);
+    
 
-        pthread_create(&handleFenetreGraphique, NULL, fctThreadFenetreGraphique, NULL);
-        /*int *retThreadFenetreGraphique;
-        pthread_join(handleFenetreGraphique, (void **)&retThreadFenetreGraphique);
-        */
-        pthread_create(&handleEvenement, NULL, fctThreadEvenements, NULL);
-        int *retThreadEvenement;
-        pthread_join(handleEvenement, (void **)&retThreadEvenement);
+    pthread_create(&handleFenetreGraphique, NULL, fctThreadFenetreGraphique, NULL);
+    /*int *retThreadFenetreGraphique;
+    pthread_join(handleFenetreGraphique, (void **)&retThreadFenetreGraphique);
+    */
+    pthread_create(&handleEvenement, NULL, fctThreadEvenements, NULL);
+    int *retThreadEvenement;
+    pthread_join(handleEvenement, (void **)&retThreadEvenement);
 
-        pthread_create(&handleStanley, NULL, fctThreadStanley, NULL);
-        int *retThreadStanley;
-        pthread_join(handleStanley, (void **)&retThreadStanley);
+    pthread_create(&handleStanley, NULL, fctThreadStanley, NULL);
+    int *retThreadStanley;
+    pthread_join(handleStanley, (void **)&retThreadStanley);
 
-        pthread_create(&handleEnnemis, NULL, fctThreadEnnemis, NULL);
-        int *retThreadEnnemis;
-        pthread_join(handleEnnemis, (void **)&retThreadEnnemis);
-    }
+    pthread_create(&handleEnnemis, NULL, fctThreadEnnemis, NULL);
+    int *retThreadEnnemis;
+    pthread_join(handleEnnemis, (void **)&retThreadEnnemis);
+    
 
     
     
@@ -418,6 +425,21 @@ void *fctThreadFenetreGraphique(void *)
                 afficherGuepe(1);
             }
         }
+
+        if(etatJeu.nbEchecs == 1)
+        {
+            afficherEchecs(1);
+        }
+
+        if (etatJeu.nbEchecs == 2)
+        {
+            afficherEchecs(2);
+        }
+
+        if (etatJeu.nbEchecs == 3)
+        {
+            afficherEchecs(3);
+        }
         
         
 
@@ -427,9 +449,9 @@ void *fctThreadFenetreGraphique(void *)
             afficherAmi(i, TOUCHE);
         }*/
 
-        afficherEchecs(0);
+        afficherEchecs(etatJeu.nbEchecs);
 
-        afficherScore(0);
+        afficherScore(etatJeu.score);
 
 
         actualiserFenetreGraphique();
@@ -447,14 +469,15 @@ void *fctThreadEvenements(void *)
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
-    while(1)
+    etatJeu.nbEchecs = 0;
+
+while(1)
 {
     evenement = lireEvenement();
 
     if(evenement == SDL_QUIT)
     {
-        printf("\nAu revoir. Merci d'avoir joué\n");
-        exit(0);
+        kill(pid, SIGQUIT);
     }
 
     pthread_mutex_lock(&mutexEtatJeu);
@@ -462,15 +485,18 @@ void *fctThreadEvenements(void *)
     switch(evenement)
     {
         case SDLK_RIGHT:
-            if(etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS)
+            if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 5) || (etatJeu.etatStanley == BAS && etatJeu.positionStanley != 3))
             {
+                
                 etatJeu.positionStanley++;
                 printf("\nDéplacement vers la droite\n");
+                
+               
             }
             break;
 
         case SDLK_LEFT:
-            if(etatJeu.etatStanley == HAUT || etatJeu.etatStanley == BAS)
+            if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 0) || (etatJeu.etatStanley == BAS)&& etatJeu.positionStanley != 0)
             {
                 etatJeu.positionStanley--;
                 printf("\nDéplacement vers la gauche\n");
@@ -513,7 +539,7 @@ void *fctThreadEvenements(void *)
             }
 
             else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
-            {
+           {
                 etatJeu.etatStanley = HAUT;
                 etatJeu.positionStanley = 2;
                 printf("\nDéplacement d'en haut de l'échelle à en haut\n");
@@ -523,7 +549,23 @@ void *fctThreadEvenements(void *)
         case SDLK_SPACE:
             etatJeu.actionStanley = SPRAY;
             printf("\nUtilisation du spray\n");
+            etatJeu.score += 5;
+            etatJeu.etatAmis[0] = TOUCHE;
+            etatJeu.etatAmis[1] = TOUCHE;
+            etatJeu.etatAmis[2] = TOUCHE;
+            etatJeu.etatAmis[3] = TOUCHE;
+            etatJeu.nbEchecs += 1;
+            if(etatJeu.nbEchecs == 3)
+            {
+                printf("\nVous avez perdu !!!\n");
+
+                pthread_exit(0);
+            }
             sleep(1);
+            etatJeu.etatAmis[0] = NORMAL;
+            etatJeu.etatAmis[1] = NORMAL;
+            etatJeu.etatAmis[2] = NORMAL;
+            etatJeu.etatAmis[3] = NORMAL;
             etatJeu.actionStanley = NORMAL;
             break;
     }
@@ -600,7 +642,7 @@ void *fctThreadStanley(void *)
                                                 break;
 
                             case SDLK_LEFT:     pthread_mutex_unlock(&mutexEtatJeu);
-                                                if(etatJeu.positionStanley >= 0)
+                                                if(etatJeu.positionStanley != 0)
                                                 {
                                                     etatJeu.positionStanley--;
                                                 }
@@ -608,7 +650,7 @@ void *fctThreadStanley(void *)
                                                 break;
 
                             case SDLK_RIGHT:    pthread_mutex_unlock(&mutexEtatJeu);
-                                                if(etatJeu.positionStanley <= 3)
+                                                if(etatJeu.positionStanley != 3)
                                                 {
                                                     
                                                     etatJeu.positionStanley++;
@@ -757,7 +799,7 @@ void *fctThreadStanley(void *)
 
                             case SDLK_LEFT:
                                                 pthread_mutex_unlock(&mutexEtatJeu);
-                                                if(etatJeu.positionStanley >= 0)
+                                                if(etatJeu.positionStanley != 0)
                                                 {
                                                     etatJeu.positionStanley--;
                                                 }
@@ -766,7 +808,7 @@ void *fctThreadStanley(void *)
 
                             case SDLK_RIGHT:
                                                 pthread_mutex_unlock(&mutexEtatJeu);
-                                                if(etatJeu.positionStanley <= 5)
+                                                if(etatJeu.positionStanley != 5)
                                                 {
                                                     etatJeu.positionStanley++;
                                                 }
@@ -801,14 +843,18 @@ void *fctThreadStanley(void *)
 
 void *fctThreadEnnemis(void *)
 {
+    
     int *DelaiApparitionEnnemi = (int *)malloc(sizeof(int));
 
     *DelaiApparitionEnnemi = 1600;
 
     pthread_setspecific(keySpec, (void *)DelaiApparitionEnnemi);
 
+
     while(1)
     {
+        kill(pid, SIGALRM);
+
         int ApparitionEnnemi = 1 + rand()%5;
 
         if(ApparitionEnnemi == 1)
@@ -941,6 +987,7 @@ void handlerSIGINT(int sig)
 {
     (void)sig;
 
+    printf("\nEnvoi d'un signal SIGINT au processus %u\n", getpid());
     printf("\nArrêt du jeu\n");
     exit(1);
 }
@@ -948,25 +995,39 @@ void handlerSIGINT(int sig)
 void handlerSIGALRM(int sig)
 {
     (void)sig;
+    printf("\nEnvoi d'un signal SIGALRM au processus %u\n", getpid());
 
     int *DelaiApparition = (int *)pthread_getspecific(keySpec);
 
     *DelaiApparition = 501 + rand()% 1100;
-
 }
 
 void handlerSIGUSR1(int sig)
 {
     (void)sig;
+    printf("\nEnvoi d'un signal SIGUSR1 au processus %u\n", getpid());
 }
 void handlerSIGUSR2(int sig)
 {
     (void)sig;
+    printf("\nEnvoi d'un signal SIGUSR2 au processus %u\n", getpid());
 }
 
 void handlerSIGQUIT(int sig)
 {
-    printf("Clic sur quitter");
+    printf("\nEnvoi d'un signal SIGQUIT au processus %u\n", getpid());
+    printf("\nAu revoir. Merci d'avoir joué\n");
 
     exit(0);
+}
+
+void handlerSIGTSTP(int sig)
+{
+    (void)sig;
+    printf("\nEnvoi d'un signal SIGTSTP au processus %u\n", getpid());
+    kill(pid, SIGTSTP);
+
+    exit(0);
+
+
 }
