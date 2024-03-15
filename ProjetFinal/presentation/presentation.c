@@ -158,7 +158,7 @@ void ouvrirFenetreGraphique()
         imgChiffre6 = chargerImage("./images/chiffres/Six.bmp");
         imgChiffre7 = chargerImage("./images/chiffres/Sept.bmp");
         imgChiffre8 = chargerImage("./images/chiffres/Huit.bmp");
-        imgChiffre9 = chargerImage("./images/chiffres/Neuf.bmp"); 
+        imgChiffre9 = chargerImage("./images/chiffres/Neuf.bmp");
 
         SDL_WM_SetCaption("Green House", NULL);
 	

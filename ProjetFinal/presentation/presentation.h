@@ -69,6 +69,7 @@ void afficherAraigneeD(int position);
 void afficherGuepe(int position);
 void afficherEchecs(int nbEchecs);
 void afficherScore(int score);
+void afficherGameOver(int image);
 
 int lireEvenement();
 
