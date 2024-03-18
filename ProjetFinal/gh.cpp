@@ -65,7 +65,7 @@ S_ETAT_JEU etatJeu =
        { { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, 
-         { NORMAL, 0 }, { NORMAL, 0 } },
+         { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
        { { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 }, { AUCUN, 0 } },
@@ -372,6 +372,7 @@ void *fctThreadStanley(void *)
                         switch(evenement)
                         {
                             case SDLK_SPACE:    
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley == 0)
                                                 {
                                                     etatJeu.actionStanley = SPRAY;
@@ -390,7 +391,7 @@ void *fctThreadStanley(void *)
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
 
-                                                if(etatJeu.positionStanley == 2)
+                                                else if(etatJeu.positionStanley == 2)
                                                 {
                                                     etatJeu.actionStanley = SPRAY;
 
@@ -415,7 +416,7 @@ void *fctThreadStanley(void *)
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
 
-                                                if(etatJeu.positionStanley == 3)
+                                                else if(etatJeu.positionStanley == 3)
                                                 {
                                                     printf("Spray\n");
                                                     etatJeu.actionStanley = SPRAY;
@@ -433,6 +434,7 @@ void *fctThreadStanley(void *)
 
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
+                                                pthread_mutex_lock(&mutexEvenement);
 
                                                 break;
 
@@ -444,23 +446,23 @@ void *fctThreadStanley(void *)
                                                 pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
-                            case SDLK_RIGHT:    pthread_mutex_unlock(&mutexEtatJeu);
+                            case SDLK_RIGHT:    pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley != 3)
                                                 {
                                                     
                                                     etatJeu.positionStanley++;
                                                     
                                                 }
-                                                pthread_mutex_lock(&mutexEtatJeu);
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
-                            case SDLK_UP:       pthread_mutex_unlock(&mutexEtatJeu);
+                            case SDLK_UP:       pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 1;
                                                 }
-                                                pthread_mutex_lock(&mutexEtatJeu);
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
                             case SDLK_DOWN:     
@@ -520,6 +522,7 @@ void *fctThreadStanley(void *)
                         switch(evenement)
                         {
                             case SDLK_SPACE:
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley == 0)
                                                 {
                                                     printf("Spray\n");
@@ -529,19 +532,43 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
+                                                    if(etatJeu.chenillesG[3].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                    }
+
+                                                    else if(etatJeu.chenillesG[4].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                    }
+
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
 
-                                                if(etatJeu.positionStanley == 1)
+                                                else if(etatJeu.positionStanley == 1)
                                                 {
-                                                    printf("Spray\n");
                                                     etatJeu.actionStanley = SPRAY;
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
                                                     sleep(0.2);
+
+                                                    if(etatJeu.chenillesG[0].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                    }
+
+                                                    else if(etatJeu.chenillesG[1].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                    }
+
+                                                    else if(etatJeu.chenillesG[2].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                    }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
@@ -557,6 +584,21 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
+                                                    if(etatJeu.chenillesD[0].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
+                                                    else if(etatJeu.chenillesD[1].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
+                                                    else if(etatJeu.chenillesD[2].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
                                                     etatJeu.actionStanley = NORMAL;
@@ -570,6 +612,16 @@ void *fctThreadStanley(void *)
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
                                                     sleep(0.2);
+
+                                                    if(etatJeu.chenillesD[3].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
+                                                    if(etatJeu.chenillesD[4].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
@@ -585,10 +637,21 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
+                                                    if(etatJeu.chenillesD[5].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
+                                                    if(etatJeu.chenillesD[6].presence == NORMAL)
+                                                    {
+                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                    }
+
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
                                                     etatJeu.actionStanley = NORMAL;
                                                 }
+                                                pthread_mutex_lock(&mutexEvenement);
 
                                                 break;
 
@@ -914,15 +977,15 @@ void handlerSIGINT(int sig)
     printf("\nLe thread %u a reçu le signal SIGINT\n", pthread_self());
     
 
-    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2 && etatJeu.actionStanley == SPRAY)
+    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
     {
-        if(etatJeu.guepes[0].presence == NORMAL)
+        if(etatJeu.guepes[0].presence == NORMAL && etatJeu.actionStanley == SPRAY)
         {
             printf("\nLa méchante Guèpe a été tuée\n");
             etatJeu.guepes[0].presence = AUCUN;
         }
 
-        else if(etatJeu.guepes[1].presence == NORMAL)
+        else if(etatJeu.guepes[1].presence == NORMAL && etatJeu.actionStanley == SPRAY)
         {
             printf("\nLa méchante Guèpe a été tuée\n");
             etatJeu.guepes[1].presence = AUCUN;
@@ -947,92 +1010,94 @@ void handlerSIGUSR1(int sig)
     printf("\nEnvoi d'un signal SIGUSR1 au processus %u\n", getpid());
     printf("\nLe thread %u a reçu le signal SIGUSR1\n", pthread_self());
 
-    if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 0 && etatJeu.actionStanley == SPRAY)
+    pthread_mutex_lock(&mutexEtatJeu);
+    if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 0)
     {
-        if(etatJeu.chenillesG[3].presence == NORMAL)
+        if(etatJeu.chenillesG[3].presence == NORMAL  /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleGauche a été tuée\n");
             etatJeu.chenillesG[3].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesG[4].presence == NORMAL)
+        else if(etatJeu.chenillesG[4].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleGauche a été tuée\n");
             etatJeu.chenillesG[4].presence = AUCUN; 
         }
     }
 
-    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 1 && etatJeu.actionStanley == SPRAY)
+    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 1)
     {
-        if(etatJeu.chenillesG[0].presence == NORMAL)
+        if(etatJeu.chenillesG[0].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleGauche a été tuée\n");
             etatJeu.chenillesG[0].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesG[1].presence == NORMAL)
+        else if(etatJeu.chenillesG[1].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleGauche a été tuée\n");
             etatJeu.chenillesG[1].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesG[2].presence == NORMAL)
+        else if(etatJeu.chenillesG[2].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleGauche a été tuée\n");
             etatJeu.chenillesG[2].presence = AUCUN;
         }
     }
 
-    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 3 && etatJeu.actionStanley == SPRAY)
+    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 3)
     {
-        if(etatJeu.chenillesD[0].presence == NORMAL)
+        if(etatJeu.chenillesD[0].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[0].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesD[1].presence == NORMAL)
+        else if(etatJeu.chenillesD[1].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[1].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesD[2].presence == NORMAL)
+        else if(etatJeu.chenillesD[2].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[2].presence = AUCUN;
         }
     }
 
-    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 4 && etatJeu.actionStanley == SPRAY)
+    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 4)
     {
-        if(etatJeu.chenillesD[3].presence == NORMAL)
+        if(etatJeu.chenillesD[3].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[3].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesD[4].presence == NORMAL)
+        else if(etatJeu.chenillesD[4].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[4].presence = AUCUN;
         }
     }
 
-    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 5 && etatJeu.actionStanley == SPRAY)
+    else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 5)
     {
-        if(etatJeu.chenillesD[5].presence == NORMAL)
+        if(etatJeu.chenillesD[5].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[5].presence = AUCUN;
         }
 
-        else if(etatJeu.chenillesD[6].presence == NORMAL)
+        else if(etatJeu.chenillesD[6].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante ChenilleDroite a été tuée\n");
             etatJeu.chenillesD[6].presence = AUCUN;
         }
     }
+    pthread_mutex_unlock(&mutexEtatJeu);
 }
 void handlerSIGUSR2(int sig)
 {
@@ -1040,23 +1105,26 @@ void handlerSIGUSR2(int sig)
     printf("\nEnvoi d'un signal SIGUSR2 au processus %u\n", getpid());
     printf("\nLe thread %u a reçu le signal SIGUSR2\n", pthread_self());
 
-    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 0 && etatJeu.actionStanley == SPRAY)
+    pthread_mutex_lock(&mutexEtatJeu);
+    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 0)
     {
-        if(etatJeu.araigneesG[4].presence == NORMAL)
+        if(etatJeu.araigneesG[4].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante AraigneeGauche a été tuée\n");
             etatJeu.araigneesG[4].presence = AUCUN;
         }
     }
+    
 
-    else if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 3 && etatJeu.actionStanley == SPRAY)
+    else if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 3)
     {
-        if(etatJeu.araigneesD[0].presence == NORMAL)
+        if(etatJeu.araigneesD[0].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
         {
             printf("\nLa méchante AraigneeDroite a été tuée\n");
             etatJeu.araigneesD[0].presence = AUCUN;
         }
     }
+    pthread_mutex_unlock(&mutexEtatJeu);
 }
 
 void handlerSIGQUIT(int sig)
