@@ -23,9 +23,7 @@ void destructeurVS(void *p);
 
 pid_t pid;
 
- int PositionGuepe = 0;
-
-pthread_t handleFenetreGraphique, handleEvenement, handleStanley, handleEnnemis, handleGuepes, handleChenillesDroites, handleChenillesGauches, handleAraigneeDroite, handleAraigneeGauche;
+pthread_t handleFenetreGraphique, handleEvenement, handleStanley, handleEnnemis, handleGuepes, handleChenillesDroites, handleChenillesGauches, handleAraigneeDroite, handleAraigneeGauche, handleInsecticideGauche, handleInsecticideDroite;
 
 pthread_cond_t condEvenement;
 pthread_cond_t condEchec;
@@ -123,35 +121,105 @@ int main(int argc, char* argv[])
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
+    int Evenement = pthread_cond_init(&condEvenement, NULL);
+    if(Evenement != 0)
+    {
+        ("\nLa variable de condition condEvenement a été initilialisée incorrectement\n");
+    }
+
+    int Echec = pthread_cond_init(&condEchec, NULL);
+    if(Echec != 0)
+    {
+        ("\nLa variable de condition condEchec a été initilialisée incorrectement\n");
+    }
+
+    int MutexEtatJeu = pthread_mutex_init(&mutexEtatJeu, NULL);
+    if(MutexEtatJeu != 0)
+    {
+        ("\nLe mutex mutexEtatJeu a été initilialisé incorrectement\n");
+    }
+
+    int MutexEvenement = pthread_mutex_init(&mutexEvenement, NULL);
+    if(MutexEvenement != 0)
+    {
+        ("\nLe mutex mutexEvenement a été initilialisé incorrectement\n");
+    }
+
+    int MutexEchec = pthread_mutex_init(&mutexEchec, NULL);
+    if(MutexEchec != 0)
+    {
+        ("\nLe mutex mutexEchec a été initilialisé incorrectement\n");
+    }
     
     pthread_key_create(&keySpec, destructeurVS);
 
     srand(time(NULL));
 
-    
-
     pthread_create(&handleFenetreGraphique, NULL, fctThreadFenetreGraphique, NULL);
-    /*int *retThreadFenetreGraphique;
-    pthread_join(handleFenetreGraphique, (void **)&retThreadFenetreGraphique);
-    */
     pthread_create(&handleEvenement, NULL, fctThreadEvenements, NULL);
-     /*int *retThreadEvenement;
-    pthread_join(handleEvenement, (void **)&retThreadEvenement);*/
-
     pthread_create(&handleStanley, NULL, fctThreadStanley, NULL);
-    /*int *retThreadStanley;
-    /*pthread_join(handleStanley, (void **)&retThreadStanley);*/
-
     pthread_create(&handleEnnemis, NULL, fctThreadEnnemis, NULL);
-    //int *retThreadEnnemis;
-    //pthread_join(handleEnnemis, (void **)&retThreadEnnemis);
-    
-
-    /*for(i = 0; i < 4; i++)
+    pthread_mutex_lock(&mutexEchec);
+    while(etatJeu.nbEchecs != 3)
     {
-        afficherInsecticideG(i);
-        afficherInsecticideD(i + 1);
-    }*/
+        pthread_cond_wait(&condEchec, &mutexEchec);
+        if(etatJeu.guepes[1].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 2)*/)
+        {
+            ("\nLe chat s'est fait violenter\n");
+            etatJeu.etatAmis[4] = TOUCHE;
+            etatJeu.nbEchecs += 1;
+            sleep(1.5);
+            etatJeu.etatAmis[4] = NORMAL;
+            echec = AUCUN;
+        }
+
+        else if(etatJeu.araigneesG[4].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 0)*/)
+        {
+            printf("\nLa fleur en bas à gauche s'est faite violenter\n");
+            etatJeu.etatAmis[2] = TOUCHE;
+            etatJeu.nbEchecs += 1;
+            sleep(1.5);
+            etatJeu.etatAmis[2] = NORMAL;
+            echec = AUCUN;
+        }
+
+        else if(etatJeu.araigneesD[0].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 3)*/)
+        {
+            printf("\nLa fleur en bas à droite s'est faite violenter\n");
+            etatJeu.etatAmis[3] = TOUCHE;
+            etatJeu.nbEchecs += 1;
+            sleep(1.5);
+            etatJeu.etatAmis[3] = NORMAL;
+            echec = AUCUN;
+        }
+
+        else if(etatJeu.chenillesG[0].presence == NORMAL /*&&(etatJeu.etatStanley != HAUT && etatJeu.positionStanley != 0)*/)
+        {
+            printf("\nLa fleur en haut à gauche s'est faite violenter\n");
+            etatJeu.etatAmis[0] = TOUCHE;
+            etatJeu.nbEchecs += 1;
+            sleep(1.5);
+            etatJeu.etatAmis[0] = NORMAL;
+            echec = AUCUN;
+        }
+
+        else if(etatJeu.chenillesD[6].presence == NORMAL /*&&(etatJeu.etatStanley != HAUT && etatJeu.positionStanley != 5)*/)
+        {
+            printf("\nLa fleur en haut à droite s'est faite violenter\n");
+            etatJeu.etatAmis[1] = TOUCHE; 
+            etatJeu.nbEchecs += 1;
+            sleep(1.5);
+            etatJeu.etatAmis[1] = NORMAL;
+            echec = AUCUN;
+        }
+    }
+    pthread_mutex_unlock(&mutexEchec);
+
+    if(etatJeu.nbEchecs == 3)
+    {
+        printf("\nVous avez perdu\n");
+        pthread_join(handleEvenement, NULL); 
+    }
 
     pthread_join(handleEvenement, NULL);    
 }
@@ -218,6 +286,22 @@ void *fctThreadFenetreGraphique(void *)
             }
         }
 
+        for(int i = 0; i < 4; i++)
+        {
+            if(etatJeu.insecticidesG[i].presence == NORMAL)
+            {
+                afficherInsecticideG(i);
+            }
+        }
+
+        for(int i = 0; i < 4; i++)
+        {
+            if(etatJeu.insecticidesD[i].presence == NORMAL)
+            {
+                afficherInsecticideD(i);
+            }
+        }
+
         afficherEchecs(etatJeu.nbEchecs);
 
         afficherScore(etatJeu.score);
@@ -255,13 +339,11 @@ while(1)
 
         case SDLK_RIGHT:
             printf("\nDéplacement vers la droite\n");
-            /*if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 5) || (etatJeu.etatStanley == BAS && etatJeu.positionStanley != 3))
-            {
-                
-                etatJeu.positionStanley++;
-                printf("\nDéplacement vers la droite\n");       
-               
-            }*/
+            pthread_mutex_lock(&mutexEvenement);
+            pthread_cond_signal(&condEvenement);
+            evenement = SDLK_RIGHT;
+            sleep(0.1);
+            pthread_mutex_unlock(&mutexEvenement);
             break;
 
         case SDLK_LEFT:
@@ -271,78 +353,35 @@ while(1)
             evenement = SDLK_LEFT;
             sleep(0.1);
             pthread_mutex_unlock(&mutexEvenement);
-            /*if((etatJeu.etatStanley == HAUT && etatJeu.positionStanley != 0) || (etatJeu.etatStanley == BAS && etatJeu.positionStanley != 0))
-            {
-                etatJeu.positionStanley--;
-                printf("\nDéplacement vers la gauche\n");
-            }*/
             break;
 
         case SDLK_DOWN:
-            /*if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
-            {
-                etatJeu.etatStanley = ECHELLE;
-                etatJeu.positionStanley = 0;
-                printf("\nDéplacement de en haut vers en haut de l'échelle\n");
-            }
-            
-
-            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
-            {
-                
-                etatJeu.positionStanley = 1;
-                printf("\nDéplacement d'en haut de l'échelle vers en bas de l'échelle\n");
-            }
-
-            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
-            {
-                etatJeu.etatStanley = BAS;
-                printf("\nDéplacement d'en bas de l'echelle à en bas\n");
-            }*/
+            printf("\nDéplacement vers le bas\n");
+            pthread_mutex_lock(&mutexEvenement);
+            pthread_cond_signal(&condEvenement);
+            evenement = SDLK_DOWN;
+            sleep(0.1);
+            pthread_mutex_unlock(&mutexEvenement);
             break;
 
         case SDLK_UP:
-            /*if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
-            {
-                
-                etatJeu.etatStanley = ECHELLE;
-                etatJeu.positionStanley = 1;
-                printf("\nDéplacement d'en bas à en bas de l'échelle\n");
-            }
-
-            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 1)
-            {
-                etatJeu.positionStanley = 0;
-                printf("\nDéplacement d'en bas de l'échelle à en haut de l'échelle\n");
-            }
-
-            else if(etatJeu.etatStanley == ECHELLE && etatJeu.positionStanley == 0)
-           {
-                etatJeu.etatStanley = HAUT;
-                etatJeu.positionStanley = 2;
-                printf("\nDéplacement d'en haut de l'échelle à en haut\n");
-            }*/
+            printf("\nDéplacement vers le haut\n");
+            pthread_mutex_lock(&mutexEvenement);
+            pthread_cond_signal(&condEvenement);
+            evenement = SDLK_UP;
+            sleep(0.1);
+            pthread_mutex_unlock(&mutexEvenement);
             break;
 
         case SDLK_SPACE:
-            evenement = SDLK_SPACE;
+            printf("\nUtilisation du spray\n");
             etatJeu.actionStanley = SPRAY;
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
+            evenement = SDLK_SPACE;
             sleep(1);
             pthread_mutex_unlock(&mutexEvenement);
             etatJeu.actionStanley = NORMAL;
-            /*etatJeu.actionStanley = SPRAY;
-            printf("\nUtilisation du spray\n");
-            //etatJeu.nbEchecs += 1;
-            if(etatJeu.nbEchecs == 3)
-            {
-                printf("\nVous avez perdu !!!\n");
-
-                pthread_exit(0);
-            }
-            sleep(1);
-            etatJeu.actionStanley = NORMAL;*/
             break;
     }
 
@@ -388,6 +427,12 @@ void *fctThreadStanley(void *)
                                                         pthread_kill(handleAraigneeGauche, SIGUSR2);
                                                     }
 
+                                                    else if(etatJeu.araigneesG[4].presence == AUCUN)
+                                                    {
+                                                        printf("\nExpansion de l'insecticide à gauche\n");
+                                                        pthread_create(&handleInsecticideGauche, NULL, fctThreadInsecticideG, NULL);
+                                                    }
+
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
                                                     etatJeu.actionStanley = NORMAL;
@@ -408,17 +453,6 @@ void *fctThreadStanley(void *)
                                                             pthread_kill(handleGuepes, SIGINT);
                                                         }
                                                     }
-                                                    /*if(etatJeu.guepes[0].presence == NORMAL)
-                                                    {
-                                                        
-                                                        pthread_kill(handleGuepes, SIGINT);
-                                                        
-                                                    }
-
-                                                    else if(etatJeu.guepes[1].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleGuepes, SIGINT);
-                                                    }*/
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
@@ -437,6 +471,12 @@ void *fctThreadStanley(void *)
                                                     if(etatJeu.araigneesD[0].presence == NORMAL)
                                                     {
                                                         pthread_kill(handleAraigneeDroite, SIGUSR2);
+                                                    }
+
+                                                    else if(etatJeu.araigneesD[0].presence == AUCUN)
+                                                    {
+                                                        printf("\nExpansion de l'insecticide à droite\n");
+                                                        pthread_create(&handleInsecticideDroite, NULL, fctThreadInsecticideD, NULL);
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -474,8 +514,6 @@ void *fctThreadStanley(void *)
                                                 pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
-                            case SDLK_DOWN:     
-                                                break;
                         }
                         break;
 
@@ -484,6 +522,7 @@ void *fctThreadStanley(void *)
                         {
 
                             case SDLK_DOWN:     
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
@@ -501,10 +540,12 @@ void *fctThreadStanley(void *)
                                                     etatJeu.etatStanley = BAS;
                                                     etatJeu.positionStanley = 1;
                                                 }
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 
                                                 break;
 
                             case SDLK_UP:       
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 1)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
@@ -523,6 +564,7 @@ void *fctThreadStanley(void *)
                                                     etatJeu.etatStanley = HAUT;
                                                     etatJeu.positionStanley = 2;
                                                 }
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
                         }  
 
@@ -644,33 +686,31 @@ void *fctThreadStanley(void *)
                                                 break;
 
                             case SDLK_LEFT:
-                                                pthread_mutex_unlock(&mutexEtatJeu);
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley != 0)
                                                 {
                                                     etatJeu.positionStanley--;
                                                 }
-                                                pthread_mutex_lock(&mutexEtatJeu);
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
                             case SDLK_RIGHT:
-                                                pthread_mutex_unlock(&mutexEtatJeu);
+                                                pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley != 5)
                                                 {
                                                     etatJeu.positionStanley++;
                                                 }
-                                                pthread_mutex_lock(&mutexEtatJeu);
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
-                            case SDLK_UP:       break;
-
-                            case SDLK_DOWN:     if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
+                            case SDLK_DOWN:     
+                                                pthread_mutex_unlock(&mutexEvenement);
+                                                if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 2)
                                                 {
                                                     etatJeu.etatStanley = ECHELLE;
                                                     etatJeu.positionStanley = 0;
                                                 }
-                                                break;
-
-                            case SDL_QUIT:      exit(0);
+                                                pthread_mutex_lock(&mutexEvenement);
                                                 break;
 
                         }
@@ -682,6 +722,11 @@ void *fctThreadStanley(void *)
         evenement = AUCUN;
 
         pthread_mutex_unlock(&mutexEvenement);
+
+        if(etatJeu.nbEchecs == 3)
+        {
+            pthread_exit(0);
+        }
     }
 
     pthread_exit(0);
@@ -689,58 +734,69 @@ void *fctThreadStanley(void *)
 
 void *fctThreadEnnemis(void *)
 {
-    
-    int *DelaiApparitionEnnemi = (int *)malloc(sizeof(int));
-
-    *DelaiApparitionEnnemi = 1600;
-
-    pthread_setspecific(keySpec, (void *)DelaiApparitionEnnemi);
 
     printf("Je suis le thread %u qui va générer des ennemis.\n", pthread_self());
+
     while(1)
     {
-      
-        int ApparitionEnnemi = 1 + rand()%5;
+        
+        int *DelaiApparitionEnnemi = (int *)malloc(sizeof(int));
 
-        if(ApparitionEnnemi == 1)
+        *DelaiApparitionEnnemi = 1600;
+
+        pthread_setspecific(keySpec, (void *)DelaiApparitionEnnemi);
+        pthread_mutex_lock(&mutexEchec);
+
+        if(echec == AUCUN)
         {
-            pthread_create(&handleGuepes, NULL, fctThreadGuepe, NULL);
-            printf("\nJe suis une méchante Guèpe\n");
-            //int *RetThreadGuepe;
-            //pthread_join(handleGuepes, (void **)&RetThreadGuepe);
+            pthread_mutex_unlock(&mutexEchec);
 
+            int ApparitionEnnemi = 1 + rand()%5;
+
+            if(ApparitionEnnemi == 1)
+            {
+                pthread_create(&handleGuepes, NULL, fctThreadGuepe, NULL);
+                printf("\nJe suis une méchante Guèpe\n");
+            }
+
+            if(ApparitionEnnemi == 2)
+            {
+                pthread_create(&handleChenillesDroites, NULL, fctThreadChenilleD, NULL);
+                printf("\nJe suis une méchante ChenilleDroite\n");
+            }
+
+            if(ApparitionEnnemi == 3)
+            {
+                pthread_create(&handleChenillesGauches, NULL, fctThreadChenilleG, NULL);
+                printf("\nJe suis une méchante ChenilleGauche\n");
+            }
+
+            if(ApparitionEnnemi == 4)
+            {
+                pthread_create(&handleAraigneeDroite, NULL, fctThreadAraigneeD, NULL);
+                printf("\nJe suis une méchante AraigneeDroite\n");
+            }
+
+            if(ApparitionEnnemi == 5)
+            {
+                pthread_create(&handleAraigneeGauche, NULL, fctThreadAraigneeG, NULL);
+                printf("\nJe suis une méchante AraigneeGauche\n");
+            }
+
+            usleep(*DelaiApparitionEnnemi * 1000);
         }
 
-        if(ApparitionEnnemi == 2)
+        else
         {
-            pthread_create(&handleChenillesDroites, NULL, fctThreadChenilleD, NULL);
-            printf("\nJe suis une méchante ChenilleDroite\n");
+            pthread_mutex_unlock(&mutexEchec);
+            pthread_exit(0);
         }
 
-        if(ApparitionEnnemi == 3)
-        {
-            pthread_create(&handleChenillesGauches, NULL, fctThreadChenilleG, NULL);
-             printf("\nJe suis une méchante ChenilleGauche\n");
-        }
 
-        if(ApparitionEnnemi == 4)
-        {
-            pthread_create(&handleAraigneeDroite, NULL, fctThreadAraigneeD, NULL);
-            printf("\nJe suis une méchante AraigneeDroite\n");
-        }
-
-        if(ApparitionEnnemi == 5)
-        {
-            pthread_create(&handleAraigneeGauche, NULL, fctThreadAraigneeG, NULL);
-            printf("\nJe suis une méchante AraigneeGauche\n");
-        }
-
-        usleep(*DelaiApparitionEnnemi * 1000);
-    }
-
-    free(DelaiApparitionEnnemi);
-    pthread_exit(0);
+        free(DelaiApparitionEnnemi);
     
+    }
+    pthread_exit(0);
 }
 
 void *fctThreadGuepe(void *)
@@ -765,11 +821,13 @@ void *fctThreadGuepe(void *)
         if(etatJeu.guepes[i].presence == NORMAL && i == 1)
         {
             sleep(1);
-            etatJeu.etatAmis[4] = TOUCHE;
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.guepes[i].presence = AUCUN;
-            //etatJeu.guepes[i].tid = pthread_self();
             pthread_mutex_unlock(&mutexEtatJeu);
+
+            pthread_mutex_lock(&mutexEchec);
+            pthread_cond_signal(&condEchec);
+            pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
@@ -801,16 +859,17 @@ void *fctThreadChenilleG(void *)
         if(etatJeu.chenillesG[i].presence == NORMAL && i == 0)
         {
             sleep(1);
-            etatJeu.etatAmis[0] = TOUCHE;
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.chenillesG[i].presence = AUCUN;
-            etatJeu.chenillesG[i].tid = pthread_self();
             pthread_mutex_unlock(&mutexEtatJeu);
+
+            pthread_mutex_lock(&mutexEchec);
+            pthread_cond_signal(&condEchec);
+            pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.chenillesG[i].presence = AUCUN;
-        etatJeu.chenillesG[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
         
     }
@@ -831,7 +890,6 @@ void *fctThreadChenilleD(void *)
     {
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.chenillesD[i].presence = NORMAL;
-        etatJeu.chenillesD[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
         sleep(1);
@@ -839,16 +897,17 @@ void *fctThreadChenilleD(void *)
         if(etatJeu.chenillesD[6].presence == NORMAL && i == 6)
         {
             sleep(1);
-            etatJeu.etatAmis[1] = TOUCHE;
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.chenillesD[i].presence = AUCUN;
-            etatJeu.chenillesD[i].tid = pthread_self();
             pthread_mutex_unlock(&mutexEtatJeu);
+
+            pthread_mutex_lock(&mutexEchec);
+            pthread_cond_signal(&condEchec);
+            pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.chenillesD[i].presence = AUCUN;
-        etatJeu.chenillesD[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
     }
 
@@ -876,16 +935,17 @@ void *fctThreadAraigneeG(void *)
         if(etatJeu.araigneesG[i].presence == NORMAL && i == 4)
         {
             sleep(1);
-            etatJeu.etatAmis[2] = TOUCHE;
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.araigneesG[i].presence = AUCUN;
-            etatJeu.araigneesG[i].tid = pthread_self();
             pthread_mutex_unlock(&mutexEtatJeu);
+
+            pthread_mutex_lock(&mutexEchec);
+            pthread_cond_signal(&condEchec);
+            pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.araigneesG[i].presence = AUCUN;
-        etatJeu.araigneesG[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
     }
 
@@ -913,28 +973,47 @@ void *fctThreadAraigneeD(void *)
         if(etatJeu.araigneesD[i].presence == NORMAL && i == 0)
         {
             sleep(1);
-            etatJeu.etatAmis[3] = TOUCHE;
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.araigneesD[i].presence = AUCUN;
-            etatJeu.araigneesD[i].tid = pthread_self();
             pthread_mutex_unlock(&mutexEtatJeu);
+
+            pthread_mutex_lock(&mutexEchec);
+            pthread_cond_signal(&condEchec);
+            pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.araigneesD[i].presence = AUCUN;
-        etatJeu.araigneesD[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
     }
 
     pthread_exit(0);
 }
 
-/*void *fctThreadInsecticideG(void *)
+void *fctThreadInsecticideG(void *)
 {
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    printf("\nJe suis le thread Insecticide Gauche %u\n", pthread_self());
+
+    for(int i = 3; i != -1; i--)
+    {
+        pthread_mutex_lock(&mutexEtatJeu);
+        etatJeu.insecticidesG[i].presence = NORMAL;
+        etatJeu.insecticidesG[i].tid = pthread_self();
+        pthread_mutex_unlock(&mutexEtatJeu);
+
+        sleep(1);
+
+        pthread_mutex_lock(&mutexEtatJeu);
+        etatJeu.insecticidesG[i].presence = AUCUN;
+        pthread_mutex_unlock(&mutexEtatJeu);
+    }
+
+    pthread_exit(0);
 }
 
 void *fctThreadInsecticideD(void *)
@@ -943,7 +1022,25 @@ void *fctThreadInsecticideD(void *)
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
     sigprocmask(SIG_SETMASK, &mask, NULL);
-}*/
+
+    printf("\nJe suis le thread Insecticide Droite %u\n", pthread_self());
+
+    for(int i = 0; i != 4; i++)
+    {
+        pthread_mutex_lock(&mutexEtatJeu);
+        etatJeu.insecticidesD[i].presence = NORMAL;
+        etatJeu.insecticidesD[i].tid = pthread_self();
+        pthread_mutex_unlock(&mutexEtatJeu);
+
+        sleep(1);
+
+        pthread_mutex_lock(&mutexEtatJeu);
+        etatJeu.insecticidesD[i].presence = AUCUN;
+        pthread_mutex_unlock(&mutexEtatJeu);
+    }
+
+    pthread_exit(0);
+}
 
 void destructeurVS(void *p)
 {
@@ -973,6 +1070,7 @@ void handlerSIGINT(int sig)
             {
                 printf("\nLa méchante Guèpe a été tuée\n");
                 etatJeu.guepes[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
 
@@ -1005,6 +1103,7 @@ void handlerSIGUSR1(int sig)
             {
                 printf("\nLa méchante ChenilleGauche a été tuée\n");
                 etatJeu.chenillesG[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
     }
@@ -1017,6 +1116,7 @@ void handlerSIGUSR1(int sig)
             {
                 printf("\nLa méchante ChenilleGauche a été tuée\n");
                 etatJeu.chenillesG[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
     }
@@ -1029,6 +1129,7 @@ void handlerSIGUSR1(int sig)
             {
                 printf("\nLa méchante ChenilleDroite a été tuée\n");
                 etatJeu.chenillesD[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
         
@@ -1042,6 +1143,7 @@ void handlerSIGUSR1(int sig)
             {
                 printf("\nLa méchante ChenilleDroite a été tuée\n");
                 etatJeu.chenillesD[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
     }
@@ -1054,6 +1156,7 @@ void handlerSIGUSR1(int sig)
             {
                 printf("\nLa méchante ChenilleDroite a été tuée\n");
                 etatJeu.chenillesD[i].presence = AUCUN;
+                etatJeu.score += 5;
             }
         }
        
@@ -1073,6 +1176,7 @@ void handlerSIGUSR2(int sig)
         {
             printf("\nLa méchante AraigneeGauche a été tuée\n");
             etatJeu.araigneesG[4].presence = AUCUN;
+            etatJeu.score += 5;
         }
     }
     
@@ -1083,6 +1187,7 @@ void handlerSIGUSR2(int sig)
         {
             printf("\nLa méchante AraigneeDroite a été tuée\n");
             etatJeu.araigneesD[0].presence = AUCUN;
+            etatJeu.score += 5;
         }
     }
     pthread_mutex_unlock(&mutexEtatJeu);
