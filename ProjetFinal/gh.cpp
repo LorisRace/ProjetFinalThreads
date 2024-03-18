@@ -192,6 +192,7 @@ void *fctThreadFenetreGraphique(void *)
             }
         }
 
+
         for(int i = 0; i < 7; i++)
         {
             if(etatJeu.chenillesD[i].presence == NORMAL)
@@ -199,6 +200,7 @@ void *fctThreadFenetreGraphique(void *)
                 afficherChenilleD(i);
             }
         }
+
 
         for(int i = 0; i < 5; i++)
         {
@@ -399,7 +401,14 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.guepes[0].presence == NORMAL)
+                                                    for(int i = 0; i != 2; i++)
+                                                    {
+                                                        if(etatJeu.guepes[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleGuepes, SIGINT);
+                                                        }
+                                                    }
+                                                    /*if(etatJeu.guepes[0].presence == NORMAL)
                                                     {
                                                         
                                                         pthread_kill(handleGuepes, SIGINT);
@@ -409,7 +418,7 @@ void *fctThreadStanley(void *)
                                                     else if(etatJeu.guepes[1].presence == NORMAL)
                                                     {
                                                         pthread_kill(handleGuepes, SIGINT);
-                                                    }
+                                                    }*/
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
 
@@ -525,21 +534,18 @@ void *fctThreadStanley(void *)
                                                 pthread_mutex_unlock(&mutexEvenement);
                                                 if(etatJeu.positionStanley == 0)
                                                 {
-                                                    printf("Spray\n");
                                                     etatJeu.actionStanley = SPRAY;
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.chenillesG[3].presence == NORMAL)
+                                                    for(int i = 0; i != 2; i++)
                                                     {
-                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
-                                                    }
-
-                                                    else if(etatJeu.chenillesG[4].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                        if(etatJeu.chenillesG[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                        }
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -555,19 +561,12 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.chenillesG[0].presence == NORMAL)
+                                                    for(int i = 2; i != 5; i++)
                                                     {
-                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
-                                                    }
-
-                                                    else if(etatJeu.chenillesG[1].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
-                                                    }
-
-                                                    else if(etatJeu.chenillesG[2].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                        if(etatJeu.chenillesG[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleChenillesGauches, SIGUSR1);
+                                                        }
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -584,19 +583,12 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.chenillesD[0].presence == NORMAL)
+                                                    for(int i = 0; i != 3; i++)
                                                     {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
-                                                    }
-
-                                                    else if(etatJeu.chenillesD[1].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
-                                                    }
-
-                                                    else if(etatJeu.chenillesD[2].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        if(etatJeu.chenillesD[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        }
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -613,14 +605,12 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.chenillesD[3].presence == NORMAL)
+                                                    for(int i = 3; i != 5; i++)
                                                     {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
-                                                    }
-
-                                                    if(etatJeu.chenillesD[4].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        if(etatJeu.chenillesD[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        }
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -637,14 +627,12 @@ void *fctThreadStanley(void *)
 
                                                     sleep(0.2);
 
-                                                    if(etatJeu.chenillesD[5].presence == NORMAL)
+                                                    for(int i = 5; i != 7; i++)
                                                     {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
-                                                    }
-
-                                                    if(etatJeu.chenillesD[6].presence == NORMAL)
-                                                    {
-                                                        pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        if(etatJeu.chenillesD[i].presence == NORMAL)
+                                                        {
+                                                            pthread_kill(handleChenillesDroites, SIGUSR1);
+                                                        }
                                                     }
 
                                                     pthread_mutex_lock(&mutexEtatJeu);
@@ -977,19 +965,17 @@ void handlerSIGINT(int sig)
     printf("\nLe thread %u a reçu le signal SIGINT\n", pthread_self());
     
 
-    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2)
+    if(etatJeu.etatStanley == BAS && etatJeu.positionStanley == 2 /*&& etatJeu.actionStanley == SPRAY*/)
     {
-        if(etatJeu.guepes[0].presence == NORMAL && etatJeu.actionStanley == SPRAY)
+        for(int i = 0; i != 2; i++)
         {
-            printf("\nLa méchante Guèpe a été tuée\n");
-            etatJeu.guepes[0].presence = AUCUN;
+            if(etatJeu.guepes[i].presence == NORMAL)
+            {
+                printf("\nLa méchante Guèpe a été tuée\n");
+                etatJeu.guepes[i].presence = AUCUN;
+            }
         }
 
-        else if(etatJeu.guepes[1].presence == NORMAL && etatJeu.actionStanley == SPRAY)
-        {
-            printf("\nLa méchante Guèpe a été tuée\n");
-            etatJeu.guepes[1].presence = AUCUN;
-        }
     }
     
 }
@@ -1013,89 +999,64 @@ void handlerSIGUSR1(int sig)
     pthread_mutex_lock(&mutexEtatJeu);
     if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 0)
     {
-        if(etatJeu.chenillesG[3].presence == NORMAL  /*&& etatJeu.actionStanley == SPRAY*/)
+        for(int i = 0; i != 2; i++)
         {
-            printf("\nLa méchante ChenilleGauche a été tuée\n");
-            etatJeu.chenillesG[3].presence = AUCUN;
-        }
-
-        else if(etatJeu.chenillesG[4].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleGauche a été tuée\n");
-            etatJeu.chenillesG[4].presence = AUCUN; 
+            if(etatJeu.chenillesG[i].presence == NORMAL)
+            {
+                printf("\nLa méchante ChenilleGauche a été tuée\n");
+                etatJeu.chenillesG[i].presence = AUCUN;
+            }
         }
     }
 
     else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 1)
     {
-        if(etatJeu.chenillesG[0].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
+        for(int i = 2; i != 5; i++)
         {
-            printf("\nLa méchante ChenilleGauche a été tuée\n");
-            etatJeu.chenillesG[0].presence = AUCUN;
-        }
-
-        else if(etatJeu.chenillesG[1].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleGauche a été tuée\n");
-            etatJeu.chenillesG[1].presence = AUCUN;
-        }
-
-        else if(etatJeu.chenillesG[2].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleGauche a été tuée\n");
-            etatJeu.chenillesG[2].presence = AUCUN;
+            if(etatJeu.chenillesG[i].presence == NORMAL)
+            {
+                printf("\nLa méchante ChenilleGauche a été tuée\n");
+                etatJeu.chenillesG[i].presence = AUCUN;
+            }
         }
     }
 
     else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 3)
     {
-        if(etatJeu.chenillesD[0].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
+        for(int i = 0; i != 3; i++)
         {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[0].presence = AUCUN;
+            if(etatJeu.chenillesD[i].presence == NORMAL)
+            {
+                printf("\nLa méchante ChenilleDroite a été tuée\n");
+                etatJeu.chenillesD[i].presence = AUCUN;
+            }
         }
-
-        else if(etatJeu.chenillesD[1].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[1].presence = AUCUN;
-        }
-
-        else if(etatJeu.chenillesD[2].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[2].presence = AUCUN;
-        }
+        
     }
 
     else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 4)
     {
-        if(etatJeu.chenillesD[3].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
+        for(int i = 3; i != 5; i++)
         {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[3].presence = AUCUN;
-        }
-
-        else if(etatJeu.chenillesD[4].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[4].presence = AUCUN;
+            if(etatJeu.chenillesD[i].presence == NORMAL)
+            {
+                printf("\nLa méchante ChenilleDroite a été tuée\n");
+                etatJeu.chenillesD[i].presence = AUCUN;
+            }
         }
     }
 
     else if(etatJeu.etatStanley == HAUT && etatJeu.positionStanley == 5)
     {
-        if(etatJeu.chenillesD[5].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
+        for(int i = 5; i != 7; i++)
         {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[5].presence = AUCUN;
+            if(etatJeu.chenillesD[i].presence == NORMAL)
+            {
+                printf("\nLa méchante ChenilleDroite a été tuée\n");
+                etatJeu.chenillesD[i].presence = AUCUN;
+            }
         }
-
-        else if(etatJeu.chenillesD[6].presence == NORMAL /*&& etatJeu.actionStanley == SPRAY*/)
-        {
-            printf("\nLa méchante ChenilleDroite a été tuée\n");
-            etatJeu.chenillesD[6].presence = AUCUN;
-        }
+       
     }
     pthread_mutex_unlock(&mutexEtatJeu);
 }
