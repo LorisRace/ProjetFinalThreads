@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
     while(etatJeu.nbEchecs != 3)
     {
         pthread_cond_wait(&condEchec, &mutexEchec);
-        if(etatJeu.guepes[1].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 2)*/)
+        if(echec == etatJeu.etatAmis[4])
         {
             ("\nLe chat s'est fait violenter\n");
             etatJeu.etatAmis[4] = TOUCHE;
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
             echec = AUCUN;
         }
 
-        else if(etatJeu.araigneesG[4].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 0)*/)
+        else if(echec == etatJeu.etatAmis[2])
         {
             printf("\nLa fleur en bas à gauche s'est faite violenter\n");
             etatJeu.etatAmis[2] = TOUCHE;
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
             echec = AUCUN;
         }
 
-        else if(etatJeu.araigneesD[0].presence == NORMAL /*&&(etatJeu.etatStanley != BAS && etatJeu.positionStanley != 3)*/)
+        else if(echec == etatJeu.etatAmis[3])
         {
             printf("\nLa fleur en bas à droite s'est faite violenter\n");
             etatJeu.etatAmis[3] = TOUCHE;
@@ -193,7 +193,7 @@ int main(int argc, char* argv[])
             echec = AUCUN;
         }
 
-        else if(etatJeu.chenillesG[0].presence == NORMAL /*&&(etatJeu.etatStanley != HAUT && etatJeu.positionStanley != 0)*/)
+        else if(echec == etatJeu.etatAmis[0])
         {
             printf("\nLa fleur en haut à gauche s'est faite violenter\n");
             etatJeu.etatAmis[0] = TOUCHE;
@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
             echec = AUCUN;
         }
 
-        else if(etatJeu.chenillesD[6].presence == NORMAL /*&&(etatJeu.etatStanley != HAUT && etatJeu.positionStanley != 5)*/)
+        else if(echec == etatJeu.etatAmis[1])
         {
             printf("\nLa fleur en haut à droite s'est faite violenter\n");
             etatJeu.etatAmis[1] = TOUCHE; 
@@ -827,6 +827,7 @@ void *fctThreadGuepe(void *)
 
             pthread_mutex_lock(&mutexEchec);
             pthread_cond_signal(&condEchec);
+            echec = etatJeu.etatAmis[4];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -865,6 +866,7 @@ void *fctThreadChenilleG(void *)
 
             pthread_mutex_lock(&mutexEchec);
             pthread_cond_signal(&condEchec);
+            echec = etatJeu.etatAmis[0];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -903,6 +905,7 @@ void *fctThreadChenilleD(void *)
 
             pthread_mutex_lock(&mutexEchec);
             pthread_cond_signal(&condEchec);
+            echec = etatJeu.etatAmis[1];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -941,12 +944,21 @@ void *fctThreadAraigneeG(void *)
 
             pthread_mutex_lock(&mutexEchec);
             pthread_cond_signal(&condEchec);
+            echec = etatJeu.etatAmis[2];
             pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.araigneesG[i].presence = AUCUN;
         pthread_mutex_unlock(&mutexEtatJeu);
+
+        for(int j = 1; j != 4; j++)
+        {
+            if(etatJeu.insecticidesG[j].presence == NORMAL)
+            {
+                pthread_kill(handleInsecticideGauche, SIGQUIT);
+            }
+        }
     }
 
     pthread_exit(0);
@@ -979,12 +991,21 @@ void *fctThreadAraigneeD(void *)
 
             pthread_mutex_lock(&mutexEchec);
             pthread_cond_signal(&condEchec);
+            echec = etatJeu.etatAmis[3];
             pthread_mutex_unlock(&mutexEchec);
         }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.araigneesD[i].presence = AUCUN;
         pthread_mutex_unlock(&mutexEtatJeu);
+
+        for (int j = 3; j != -1; j--)
+        {
+            if(etatJeu.insecticidesD[j].presence == NORMAL)
+            {
+                pthread_kill(handleInsecticideDroite, SIGQUIT);
+            }
+        }
     }
 
     pthread_exit(0);
@@ -1007,6 +1028,14 @@ void *fctThreadInsecticideG(void *)
         pthread_mutex_unlock(&mutexEtatJeu);
 
         sleep(1);
+
+        for(int i = 2; i != -1; i--)
+        {
+            if(etatJeu.araigneesD[i].presence == NORMAL)
+            {
+                pthread_kill(handleAraigneeDroite, SIGUSR2);
+            }
+        }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.insecticidesG[i].presence = AUCUN;
@@ -1033,6 +1062,14 @@ void *fctThreadInsecticideD(void *)
         pthread_mutex_unlock(&mutexEtatJeu);
 
         sleep(1);
+
+        for(int i = 1; i != 4; i++)
+        {
+            if(etatJeu.araigneesD[i].presence == NORMAL)
+            {
+                pthread_kill(handleAraigneeDroite, SIGUSR2);
+            }
+        }
 
         pthread_mutex_lock(&mutexEtatJeu);
         etatJeu.insecticidesD[i].presence = AUCUN;
@@ -1196,9 +1233,27 @@ void handlerSIGUSR2(int sig)
 void handlerSIGQUIT(int sig)
 {
     printf("\nEnvoi d'un signal SIGQUIT au processus %u\n", getpid());
-    printf("\nAu revoir. Merci d'avoir joué\n");
+    printf("\nLe thread %u a reçu un signal SIGQUIT\n", pthread_self());
 
-    exit(0);
+    for(int i = 1; i != 4; i++)
+    {
+        if(etatJeu.insecticidesG[i].presence == NORMAL)
+        {
+            etatJeu.araigneesG[i].presence == AUCUN;
+            etatJeu.score += 5;
+        }
+    }
+
+    for(int i = 3; i != -1; i--)
+    {
+        if(etatJeu.insecticidesD[i].presence == NORMAL)
+        {
+            
+            etatJeu.araigneesD[i].presence == AUCUN;
+            etatJeu.score += 5;
+        }
+    }
+
 }
 
 void handlerSIGTSTP(int sig)
