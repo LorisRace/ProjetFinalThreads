@@ -159,61 +159,22 @@ int main(int argc, char* argv[])
     pthread_create(&handleEvenement, NULL, fctThreadEvenements, NULL);
     pthread_create(&handleStanley, NULL, fctThreadStanley, NULL);
     pthread_create(&handleEnnemis, NULL, fctThreadEnnemis, NULL);
-    pthread_mutex_lock(&mutexEchec);
+    
     while(etatJeu.nbEchecs != 3)
     {
-        pthread_cond_wait(&condEchec, &mutexEchec);
-        if(echec == etatJeu.etatAmis[4])
+        pthread_mutex_lock(&mutexEchec);
+        while (echec == AUCUN)
         {
-            ("\nLe chat s'est fait violenter\n");
-            etatJeu.etatAmis[4] = TOUCHE;
-            etatJeu.nbEchecs += 1;
-            sleep(1.5);
-            etatJeu.etatAmis[4] = NORMAL;
-            echec = AUCUN;
+            pthread_cond_wait(&condEchec, &mutexEchec);
         }
-
-        else if(echec == etatJeu.etatAmis[2])
-        {
-            printf("\nLa fleur en bas à gauche s'est faite violenter\n");
-            etatJeu.etatAmis[2] = TOUCHE;
-            etatJeu.nbEchecs += 1;
-            sleep(1.5);
-            etatJeu.etatAmis[2] = NORMAL;
-            echec = AUCUN;
-        }
-
-        else if(echec == etatJeu.etatAmis[3])
-        {
-            printf("\nLa fleur en bas à droite s'est faite violenter\n");
-            etatJeu.etatAmis[3] = TOUCHE;
-            etatJeu.nbEchecs += 1;
-            sleep(1.5);
-            etatJeu.etatAmis[3] = NORMAL;
-            echec = AUCUN;
-        }
-
-        else if(echec == etatJeu.etatAmis[0])
-        {
-            printf("\nLa fleur en haut à gauche s'est faite violenter\n");
-            etatJeu.etatAmis[0] = TOUCHE;
-            etatJeu.nbEchecs += 1;
-            sleep(1.5);
-            etatJeu.etatAmis[0] = NORMAL;
-            echec = AUCUN;
-        }
-
-        else if(echec == etatJeu.etatAmis[1])
-        {
-            printf("\nLa fleur en haut à droite s'est faite violenter\n");
-            etatJeu.etatAmis[1] = TOUCHE; 
-            etatJeu.nbEchecs += 1;
-            sleep(1.5);
-            etatJeu.etatAmis[1] = NORMAL;
-            echec = AUCUN;
-        }
+        etatJeu.etatAmis[echec] = TOUCHE;
+        etatJeu.nbEchecs += 1;
+        sleep(1.5);
+        etatJeu.etatAmis[echec] = NORMAL;
+        echec = AUCUN;
+        pthread_mutex_unlock(&mutexEchec);
     }
-    pthread_mutex_unlock(&mutexEchec);
+    
 
     if(etatJeu.nbEchecs == 3)
     {
@@ -804,6 +765,9 @@ void *fctThreadGuepe(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGUSR1);
+    sigaddset(&mask, SIGUSR2);
+    sigaddset(&mask, SIGQUIT);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread Guèpe %u\n", pthread_self());
@@ -826,8 +790,8 @@ void *fctThreadGuepe(void *)
             pthread_mutex_unlock(&mutexEtatJeu);
 
             pthread_mutex_lock(&mutexEchec);
+            echec = CHAT;
             pthread_cond_signal(&condEchec);
-            echec = etatJeu.etatAmis[4];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -844,6 +808,9 @@ void *fctThreadChenilleG(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGQUIT);
+    sigaddset(&mask, SIGUSR2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread ChenilleGauche %u\n", pthread_self());
@@ -865,8 +832,8 @@ void *fctThreadChenilleG(void *)
             pthread_mutex_unlock(&mutexEtatJeu);
 
             pthread_mutex_lock(&mutexEchec);
+            echec = FLEUR_HG;
             pthread_cond_signal(&condEchec);
-            echec = etatJeu.etatAmis[0];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -884,6 +851,9 @@ void *fctThreadChenilleD(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGQUIT);
+    sigaddset(&mask, SIGUSR2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread ChenilleDroite %u\n", pthread_self());
@@ -904,8 +874,8 @@ void *fctThreadChenilleD(void *)
             pthread_mutex_unlock(&mutexEtatJeu);
 
             pthread_mutex_lock(&mutexEchec);
+            echec = FLEUR_HD;
             pthread_cond_signal(&condEchec);
-            echec = etatJeu.etatAmis[1];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -922,6 +892,8 @@ void *fctThreadAraigneeG(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGUSR1);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread AraigneeGauche %u\n", pthread_self());
@@ -943,8 +915,8 @@ void *fctThreadAraigneeG(void *)
             pthread_mutex_unlock(&mutexEtatJeu);
 
             pthread_mutex_lock(&mutexEchec);
+            echec = FLEUR_BG;
             pthread_cond_signal(&condEchec);
-            echec = etatJeu.etatAmis[2];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -969,6 +941,8 @@ void *fctThreadAraigneeD(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGUSR1);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread AraigneeDroite %u\n", pthread_self());
@@ -990,8 +964,8 @@ void *fctThreadAraigneeD(void *)
             pthread_mutex_unlock(&mutexEtatJeu);
 
             pthread_mutex_lock(&mutexEchec);
+            echec = FLEUR_BD;
             pthread_cond_signal(&condEchec);
-            echec = etatJeu.etatAmis[3];
             pthread_mutex_unlock(&mutexEchec);
         }
 
@@ -1016,6 +990,8 @@ void *fctThreadInsecticideG(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGUSR2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread Insecticide Gauche %u\n", pthread_self());
@@ -1050,6 +1026,8 @@ void *fctThreadInsecticideD(void *)
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGALRM);
+    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGUSR2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("\nJe suis le thread Insecticide Droite %u\n", pthread_self());
