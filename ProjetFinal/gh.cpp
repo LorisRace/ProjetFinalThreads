@@ -21,6 +21,8 @@ void handlerSIGTSTP(int);
 
 void destructeurVS(void *p);
 
+void Attente(float secondes);
+
 pid_t pid;
 
 pthread_t handleFenetreGraphique, handleEvenement, handleStanley, handleEnnemis, handleGuepes, handleChenillesDroites, handleChenillesGauches, handleAraigneeDroite, handleAraigneeGauche, handleInsecticideGauche, handleInsecticideDroite;
@@ -169,7 +171,7 @@ int main(int argc, char* argv[])
         }
         etatJeu.etatAmis[echec] = TOUCHE;
         etatJeu.nbEchecs += 1;
-        sleep(1.5);
+        Attente(1.5);
         etatJeu.etatAmis[echec] = NORMAL;
         echec = AUCUN;
         pthread_mutex_unlock(&mutexEchec);
@@ -269,7 +271,7 @@ void *fctThreadFenetreGraphique(void *)
 
         actualiserFenetreGraphique();
 
-        sleep(0.1);
+        Attente(0.1);
     }
 
     pthread_exit(0);
@@ -303,7 +305,7 @@ while(1)
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
             evenement = SDLK_RIGHT;
-            sleep(0.1);
+            Attente(0.1);
             pthread_mutex_unlock(&mutexEvenement);
             break;
 
@@ -312,7 +314,7 @@ while(1)
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
             evenement = SDLK_LEFT;
-            sleep(0.1);
+            Attente(0.1);
             pthread_mutex_unlock(&mutexEvenement);
             break;
 
@@ -321,7 +323,7 @@ while(1)
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
             evenement = SDLK_DOWN;
-            sleep(0.1);
+            Attente(0.1);
             pthread_mutex_unlock(&mutexEvenement);
             break;
 
@@ -330,7 +332,7 @@ while(1)
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
             evenement = SDLK_UP;
-            sleep(0.1);
+            Attente(0.1);
             pthread_mutex_unlock(&mutexEvenement);
             break;
 
@@ -340,7 +342,7 @@ while(1)
             pthread_mutex_lock(&mutexEvenement);
             pthread_cond_signal(&condEvenement);
             evenement = SDLK_SPACE;
-            sleep(1);
+            Attente(1);
             pthread_mutex_unlock(&mutexEvenement);
             etatJeu.actionStanley = NORMAL;
             break;
@@ -381,7 +383,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     if(etatJeu.araigneesG[4].presence == NORMAL)
                                                     {
@@ -405,7 +407,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 0; i != 2; i++)
                                                     {
@@ -427,7 +429,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     if(etatJeu.araigneesD[0].presence == NORMAL)
                                                     {
@@ -541,7 +543,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 0; i != 2; i++)
                                                     {
@@ -562,7 +564,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 2; i != 5; i++)
                                                     {
@@ -584,7 +586,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 0; i != 3; i++)
                                                     {
@@ -606,7 +608,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 3; i != 5; i++)
                                                     {
@@ -628,7 +630,7 @@ void *fctThreadStanley(void *)
 
                                                     pthread_mutex_unlock(&mutexEtatJeu);
 
-                                                    sleep(0.2);
+                                                    Attente(0.2);
 
                                                     for(int i = 5; i != 7; i++)
                                                     {
@@ -780,11 +782,11 @@ void *fctThreadGuepe(void *)
         etatJeu.guepes[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         if(etatJeu.guepes[i].presence == NORMAL && i == 1)
         {
-            sleep(1);
+            Attente(1);
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.guepes[i].presence = AUCUN;
             pthread_mutex_unlock(&mutexEtatJeu);
@@ -822,11 +824,11 @@ void *fctThreadChenilleG(void *)
         etatJeu.chenillesG[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         if(etatJeu.chenillesG[i].presence == NORMAL && i == 0)
         {
-            sleep(1);
+            Attente(1);
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.chenillesG[i].presence = AUCUN;
             pthread_mutex_unlock(&mutexEtatJeu);
@@ -864,11 +866,11 @@ void *fctThreadChenilleD(void *)
         etatJeu.chenillesD[i].presence = NORMAL;
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         if(etatJeu.chenillesD[6].presence == NORMAL && i == 6)
         {
-            sleep(1);
+            Attente(1);
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.chenillesD[i].presence = AUCUN;
             pthread_mutex_unlock(&mutexEtatJeu);
@@ -905,11 +907,11 @@ void *fctThreadAraigneeG(void *)
         etatJeu.araigneesG[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         if(etatJeu.araigneesG[i].presence == NORMAL && i == 4)
         {
-            sleep(1);
+            Attente(1);
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.araigneesG[i].presence = AUCUN;
             pthread_mutex_unlock(&mutexEtatJeu);
@@ -954,11 +956,11 @@ void *fctThreadAraigneeD(void *)
         etatJeu.araigneesD[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         if(etatJeu.araigneesD[i].presence == NORMAL && i == 0)
         {
-            sleep(1);
+            Attente(1);
             pthread_mutex_lock(&mutexEtatJeu);
             etatJeu.araigneesD[i].presence = AUCUN;
             pthread_mutex_unlock(&mutexEtatJeu);
@@ -1003,7 +1005,7 @@ void *fctThreadInsecticideG(void *)
         etatJeu.insecticidesG[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         for(int i = 2; i != -1; i--)
         {
@@ -1039,7 +1041,7 @@ void *fctThreadInsecticideD(void *)
         etatJeu.insecticidesD[i].tid = pthread_self();
         pthread_mutex_unlock(&mutexEtatJeu);
 
-        sleep(1);
+        Attente(1);
 
         for(int i = 1; i != 4; i++)
         {
@@ -1242,4 +1244,16 @@ void handlerSIGTSTP(int sig)
     kill(pid, SIGTSTP);
 
     exit(0);
+}
+
+void Attente(float secondes) 
+{
+    struct timespec delai;
+    delai.tv_sec = (time_t)secondes;
+    delai.tv_nsec = (long)((secondes - (time_t)secondes) * 1e9);
+
+    if (nanosleep(&delai, NULL) == -1) 
+    {
+        perror("nanoAttente");
+    }
 }
